@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>AWESOME METRONOME</title>
+<script src="./jquery-3.2.1.min.js" type="text/javascript"></script>
+</head>
+<body>
+<!-- Start your code here -->
+
+  <div class="mainContainer">
+    <div class="container metronome">
+      <div class="circle" id="circle">
+      </div>
+    </div>
+    <div class="container tempo">
+    </div>
+  </div>
+  <style>
+  html, body{margin: 0;height:100%;}
+
+.mainContainer{
+  background: #000;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content:  flex-start;
+}
+
+.container{
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.tempo{
+  flex-basis: 200px;
+  flex-shrink: 0;
+}
+
+.tempomaker{
+  flex-grow: 1;
+  color: #fff;
+  background:#222;
+  width: 200px;
+  height: 100px;
+  text-align: center;
+  font-family: Ubuntu, Arial, sans-serif;
+  font-size: 50px;
+  font-weight: bold;
+  transition: background-color 0.2s;
+  justify-content: center;
+  border:5px solid #000;
+}
+.tempomaker:hover{
+  background: #333;
+}
+.tempomaker:active{
+  background: #a00;
+}
+
+.metronome{
+  background: #000;
+  flex-basis: 100%;
+  overflow: hidden;
+}
+
+.circle {
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  margin: auto;
+  background: #fff;
+}
+  </style>
+  <script type="text/javascript">
+  if (!Date.now) {
+    Date.now = function() { return new Date().getTime(); }
+  }
+  function letItBlink(){
+    $('#circle').stop().animate({opacity: 1}, 100, function(){
+      $(this).stop().animate({opacity: 0}, 200);
+    });
+  }
+
+  var interval = 0;
+  var nextTimestamp = 0;
+
+  function setMetronome(newInterval){
+    interval = newInterval;
+    if(!metroTimer) {
+      var metroTimer = setInterval(checkForTimerEvent, 10);
+    }
+  }
+
+  function checkForTimerEvent(){
+    if(interval > 0) {
+        var currentUnix = Date.now();
+        if(nextTimestamp) {
+          if(nextTimestamp && currentUnix > nextTimestamp) {
+              letItBlink();
+              nextTimestamp = currentUnix + interval;
+          }
+        } else {
+          letItBlink();
+          nextTimestamp = currentUnix + interval;
+        }
+    }
+  }
+
+  function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    let regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+      results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+  }
+
+  if(getParameterByName("tempi")){
+    tempi = getParameterByName("tempi").split(',');
+    var i = tempi.length;
+    for(var i = 0; i<tempi.length; i++) {
+      var interval = 60000/tempi[i];
+      var code = $("<div class='tempomaker' onclick='setMetronome("+interval+")'>"+tempi[i]+"</div>");
+      $(".tempo").append(code);
+    }
+  }
+
+  </script>
+<!-- End your code here -->
+</body>
+</html>
